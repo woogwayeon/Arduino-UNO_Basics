@@ -2,29 +2,31 @@
 
 Servo myservo;
 
-const int duration = 150; 
+const int duration = 150;  // 튕김방지용
 unsigned long pre = 0;  // 이전
 unsigned long cur = 0;  // 지금
 unsigned long last = 0;  // 마지막
 
 int cnt = 0;
 
-const int checkTime = 300; 
+const int checkTime = 500; // 클릭판단
 
 void servoISR()
 {
-  if (cur - pre >= duration) 
+  long cur2 = millis();
+
+  if (cur2 - pre >= duration) 
   {
-    pre = cur;
+    pre = cur2;
     cnt++;
-    last = cur; 
   }
 }
 
 void setup() 
 {
   attachInterrupt(0, servoISR, FALLING);
-  myservo.attach(3);
+  myservo.attach(13);
+  myservo.write(0);
   Serial.begin(9600);
 }
 
@@ -32,7 +34,7 @@ void loop()
 { 
   cur = millis();
 
-  if (cnt > 0 && (cur - last > checkTime)) 
+  if (cur - last > checkTime) 
   {
     if (cnt == 1) 
     { 
@@ -45,5 +47,6 @@ void loop()
       Serial.println("180도");
     }
     cnt = 0;
+    last = cur;
   }
 }
